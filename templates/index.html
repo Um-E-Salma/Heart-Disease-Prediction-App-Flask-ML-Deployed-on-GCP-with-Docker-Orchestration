@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CardioAI - Heart Disease Prediction</title>
+    
+    <!-- External Libraries -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🫀</text></svg>">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-heartbeat"></i>
+                CardioAI
+            </div>
+            <div class="nav-status">
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    <span id="apiStatus">API Ready</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Form Section -->
+        <div class="form-section card">
+            <h2 class="section-title">
+                <i class="fas fa-user-md"></i>
+                Patient Assessment
+            </h2>
+            
+            <form id="predictionForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="age">
+                            <i class="fas fa-calendar-alt"></i>
+                            Age
+                        </label>
+                        <input type="number" id="age" name="age" min="1" max="120" required 
+                               placeholder="Enter age">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="sex">
+                            <i class="fas fa-venus-mars"></i>
+                            Sex
+                        </label>
+                        <select id="sex" name="sex" required>
+                            <option value="">Select Gender...</option>
+                            <option value="1">Male</option>
+                            <option value="0">Female</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="chestPainType">
+                            <i class="fas fa-heartbeat"></i>
+                            Chest Pain Type
+                        </label>
+                        <select id="chestPainType" name="chestPainType" required>
+                            <option value="">Select Type...</option>
+                            <option value="0">Typical Angina</option>
+                            <option value="1">Atypical Angina</option>
+                            <option value="2">Non-Anginal Pain</option>
+                            <option value="3">Asymptomatic</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="restingBP">
+                            <i class="fas fa-tachometer-alt"></i>
+                            Resting Blood Pressure
+                        </label>
+                        <input type="number" id="restingBP" name="restingBP" min="80" max="250" required 
+                               placeholder="mmHg">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="cholesterol">
+                            <i class="fas fa-vial"></i>
+                            Cholesterol (mg/dl)
+                        </label>
+                        <input type="number" id="cholesterol" name="cholesterol" min="100" max="600" required 
+                               placeholder="mg/dl">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="fastingBS">
+                            <i class="fas fa-cube"></i>
+                            Fasting Blood Sugar
+                        </label>
+                        <select id="fastingBS" name="fastingBS" required>
+                            <option value="">Select Level...</option>
+                            <option value="0">≤ 120 mg/dl (Normal)</option>
+                            <option value="1">> 120 mg/dl (High)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="restingECG">
+                            <i class="fas fa-chart-line"></i>
+                            Resting ECG
+                        </label>
+                        <select id="restingECG" name="restingECG" required>
+                            <option value="">Select Result...</option>
+                            <option value="0">Normal</option>
+                            <option value="1">ST-T Wave Abnormality</option>
+                            <option value="2">LV Hypertrophy</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="maxHR">
+                            <i class="fas fa-heart"></i>
+                            Max Heart Rate
+                        </label>
+                        <input type="number" id="maxHR" name="maxHR" min="60" max="220" required 
+                               placeholder="bpm">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="exerciseAngina">
+                            <i class="fas fa-running"></i>
+                            Exercise Induced Angina
+                        </label>
+                        <select id="exerciseAngina" name="exerciseAngina" required>
+                            <option value="">Select...</option>
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="oldpeak">
+                            <i class="fas fa-chart-area"></i>
+                            ST Depression (Oldpeak)
+                        </label>
+                        <input type="number" id="oldpeak" name="oldpeak" min="0" max="10" step="0.1" required 
+                               placeholder="0.0 - 10.0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="stSlope">
+                            <i class="fas fa-angle-up"></i>
+                            ST Slope
+                        </label>
+                        <select id="stSlope" name="stSlope" required>
+                            <option value="">Select Slope...</option>
+                            <option value="0">Upsloping</option>
+                            <option value="1">Flat</option>
+                            <option value="2">Downsloping</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-brain"></i>
+                        Analyze Risk
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="clearForm()">
+                        <i class="fas fa-redo"></i>
+                        Reset Form
+                    </button>
+                </div>
+                
+                <!-- Form Tips -->
+                <div class="form-tips">
+                    <p><i class="fas fa-info-circle"></i> 
+                       <strong>Tips:</strong> Use Ctrl+Enter to submit, Ctrl+R to reset
+                    </p>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section card">
+            <h2 class="section-title">
+                <i class="fas fa-chart-line"></i>
+                AI Diagnosis Results
+            </h2>
+            
+            <!-- Loading State -->
+            <div class="loading" id="loadingIndicator">
+                <div class="spinner"></div>
+                <p>Analyzing patient data...</p>
+                <p style="font-size: 0.9rem; color: var(--text-gray);">
+                    <i class="fas fa-robot"></i> AI processing in progress
+                </p>
+            </div>
+            
+            <!-- Results Container -->
+            <div id="resultsContainer" style="display: none;">
+                <div class="prediction-card" id="predictionCard">
+                    <!-- Risk Assessment -->
+                    <div class="risk-indicator">
+                        <div class="risk-icon" id="riskIcon">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
+                        <div class="risk-details">
+                            <h3 id="riskLevel">Risk Assessment</h3>
+                            <p id="riskMessage">Complete the form to get your analysis</p>
+                            <div class="risk-timestamp" id="analysisTime"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Confidence Levels -->
+                    <div class="confidence-section">
+                        <h4 class="confidence-title">
+                            <i class="fas fa-percentage"></i> 
+                            Confidence Levels
+                        </h4>
+                        <div class="confidence-bars">
+                            <div class="confidence-item">
+                                <div class="confidence-label">
+                                    <i class="fas fa-shield-alt text-success"></i>
+                                    Low Risk
+                                </div>
+                                <div class="confidence-progress">
+                                    <div class="confidence-fill low-risk" id="lowRiskBar" style="width: 0%"></div>
+                                </div>
+                                <span class="confidence-value" id="lowRiskPercent">0%</span>
+                            </div>
+                            <div class="confidence-item">
+                                <div class="confidence-label">
+                                    <i class="fas fa-exclamation-triangle text-danger"></i>
+                                    High Risk
+                                </div>
+                                <div class="confidence-progress">
+                                    <div class="confidence-fill high-risk" id="highRiskBar" style="width: 0%"></div>
+                                </div>
+                                <span class="confidence-value" id="highRiskPercent">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Health Recommendations -->
+                    <div class="recommendations" id="recommendationsSection" style="display: none;">
+                        <h4 class="recommendations-title">
+                            <i class="fas fa-lightbulb"></i> 
+                            Personalized Health Recommendations
+                        </h4>
+                        <ul id="recommendationsList" class="recommendations-list"></ul>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <button class="btn btn-outline" onclick="exportResults()">
+                            <i class="fas fa-download"></i>
+                            Export Results
+                        </button>
+                        <button class="btn btn-outline" onclick="shareResults()">
+                            <i class="fas fa-share"></i>
+                            Share
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Visual Analysis -->
+                <div class="chart-container">
+                    <h4 class="chart-title">
+                        <i class="fas fa-chart-pie"></i> 
+                        Visual Analysis
+                    </h4>
+                    <div class="chart-placeholder" id="chartPlaceholder">
+                        <div class="chart-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <p>Advanced charts and visualizations will appear here after analysis</p>
+                        <button class="btn btn-small" onclick="generateCharts()" id="generateChartsBtn" style="display: none;">
+                            <i class="fas fa-chart-pie"></i>
+                            Generate Visual Charts
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Default State -->
+            <div id="defaultState" class="default-state">
+                <div class="default-icon">
+                    <i class="fas fa-stethoscope"></i>
+                </div>
+                <h3>Ready for Analysis</h3>
+                <p>Fill out the patient assessment form to begin AI-powered heart disease risk analysis.</p>
+                <div class="features-list">
+                    <div class="feature-item">
+                        <i class="fas fa-brain"></i>
+                        <span>Advanced AI Analysis</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Real-time Risk Assessment</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Personalized Recommendations</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-main">
+                <p>Made with <span class="heart">❤️</span> by Um-E-Salma — Bringing AI to Healthcare </p>
+                <p class="footer-brand">CardioAI &copy; 2025</p>
+            </div>
+            <div class="footer-disclaimer">
+                <p>
+                    <i class="fas fa-shield-alt"></i> 
+                    <strong>Medical Disclaimer:</strong> This AI tool is for educational purposes only. 
+                    Always consult healthcare professionals for medical advice.
+                </p>
+            </div>
+            <div class="footer-links">
+                <a href="#" onclick="showInfo('privacy')">Privacy Policy</a>
+                <a href="#" onclick="showInfo('terms')">Terms of Service</a>
+                <a href="#" onclick="showInfo('about')">About CardioAI</a> <!--is line se nechy end tak new code added he-->
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <div class="toast-content">
+            <i class="toast-icon"></i>
+            <span class="toast-message"></span>
+        </div>
+        <button class="toast-close" onclick="closeToast()">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <!-- Modal for Information -->
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Information</h3>
+                <button class="modal-close" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Dynamic content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    
+</body>
+</html>
