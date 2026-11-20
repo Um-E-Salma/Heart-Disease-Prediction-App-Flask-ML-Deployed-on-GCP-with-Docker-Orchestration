@@ -214,3 +214,6 @@ yarn-error.log*
 # Production builds
 dist/
 build/
+
+# Models
+.pkl/
